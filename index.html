@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>otopark</title>
+<meta name="description" content="Songs, Sessions und Konzerte von otopark.">
+<meta name="theme-color" content="#536472">
+<meta property="og:type" content="website">
+<meta property="og:title" content="otopark">
+<meta property="og:description" content="Songs, Sessions und Konzerte von otopark.">
+<!-- Vorschaubild für Instagram/WhatsApp, 1200×630 px, später eintragen:
+<meta property="og:image" content="https://DEINE-DOMAIN.de/og.jpg"> -->
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="logo.webp" as="image">
+<style>
+/* Schriften liegen lokal in fonts/ – kein Abruf bei Google (DSGVO). Alle unter SIL Open Font License. */
+@font-face{font-family:"JetBrains Mono";src:url(fonts/jetbrains-mono.woff2) format("woff2");font-weight:100 800;font-display:swap}
+
+/* Schrift: JetBrains Mono – Strichstärke normal / beim Drüberfahren, Laufweite */
+html{--f:"JetBrains Mono";--w:200;--wh:500;--ls:-.04em}
+
+:root{
+  --bg:#536472;             /* Hintergrund rgb(83,100,114) */
+  --title:#e0f2f8;          /* Schrift „otopark“ rgb(224,242,248) */
+  --c:#b3c4ff;              /* aktuelle Logofarbe, wechselt an jeder Kante */
+  --lc:#ffa69c;             /* aktuelle Linkfarbe, immer anders als das Logo */
+  --pad:clamp(4px,1vw,12px);   /* Abstand links/rechts */
+  --vpad:clamp(10px,1.5vw,20px);
+  --rule:3px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:#fff;
+  font-family:var(--f),ui-monospace,Menlo,monospace;font-weight:var(--w);font-size:18px;line-height:1.35;
+  -webkit-font-smoothing:antialiased;text-transform:lowercase}
+
+/* Bildschirmschoner-Ebene: liegt über der Schrift, Klicks gehen durch */
+.screen{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.dvd{position:absolute;top:0;left:0;width:clamp(220px,46vw,520px);aspect-ratio:900/385;
+  background-color:var(--c);
+  -webkit-mask:url(logo.webp) center/contain no-repeat;mask:url(logo.webp) center/contain no-repeat;
+  will-change:transform;transform:translate3d(var(--x,0px),var(--y,0px),0)}
+
+.page{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;
+  padding:calc(var(--vpad) + env(safe-area-inset-top)) var(--pad) calc(var(--vpad) + env(safe-area-inset-bottom))}
+
+.name{margin:0 0 calc(.16em + var(--vpad)) -.063em;color:var(--title);font-weight:var(--w);letter-spacing:calc(var(--ls) - .02em);text-align:left;
+  font-size:calc((100vw - 2 * var(--pad)) / 3.6);line-height:.86;white-space:nowrap}
+
+/* Linien gehen von Rand zu Rand, Text startet fast ganz links, alle Links in einer Farbe */
+.links{margin:0 calc(-1 * var(--pad));border-top:var(--rule) solid #fff}
+.link{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:.2em var(--pad);border-bottom:var(--rule) solid #fff;color:var(--lc);text-decoration:none;
+  font-weight:var(--w);font-size:clamp(36px,10vw,88px);line-height:1.08;letter-spacing:var(--ls);
+  -webkit-tap-highlight-color:transparent}
+
+.link:focus-visible{outline:3px solid #fff;outline-offset:-6px}
+.txt{min-width:0;margin-left:-.05em}   /* gleicht den Leerraum vor dem ersten Buchstaben aus */
+.sub{display:block;margin:.15em 0 .2em;color:#fff;font-size:max(15px,.19em);font-weight:var(--w);letter-spacing:-.02em;line-height:1.2}
+/* kleines Bild rechts neben dem Titel (optional) */
+.thumb{flex:none;display:block;width:1em;height:1em;object-fit:cover}
+
+.foot{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:auto;padding-top:calc(var(--vpad) * 2 + 8px);font-size:16px}
+.foot a{color:#fff;text-underline-offset:3px;text-decoration-thickness:1.5px}
+
+.foot a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.foot .copy{margin-left:auto}
+
+/* Kurzer Gag, wenn das Logo genau eine Ecke trifft */
+.flash{position:fixed;inset:0;z-index:5;pointer-events:none;background:#fff;mix-blend-mode:difference;opacity:0}
+html.corner .flash{opacity:1}
+
+
+</style>
+</head>
+<body>
+<div class="screen" aria-hidden="true"><div class="dvd"></div></div>
+<div class="flash" aria-hidden="true"></div>
+
+<main class="page">
+  <h1 class="name">otopark</h1>
+
+  <!--
+    LINKS BEARBEITEN
+    - href = Ziel, Text = was angezeigt wird.
+    - Bild rechts (optional): vor </a> einfügen
+        <img class="thumb" src="bilder/DATEINAME.jpg" alt="" width="240" height="240">
+      Das Bild wird quadratisch zugeschnitten. Ideal: ca. 240 × 240 Pixel, JPG oder WebP, im Ordner bilder/.
+      Ohne Bild die Zeile einfach weglassen.
+    - Die drei Bilder in bilder/ sind nur Platzhalter aus dem Logo.
+  -->
+  <nav class="links" aria-label="Links von otopark">
+    <a class="link" href="https://www.youtube.com/">
+      <span class="txt">Overflow<span class="sub">Die Session auf YouTube ansehen</span></span>
+      <img class="thumb" src="bilder/figur.webp" alt="" width="240" height="240">
+    </a>
+    <a class="link" href="https://open.spotify.com/"><span class="txt">Spotify</span></a>
+    <a class="link" href="https://www.instagram.com/"><span class="txt">Instagram</span></a>
+    <a class="link" href="https://www.youtube.com/"><span class="txt">YouTube</span></a>
+    <a class="link" href="https://www.tiktok.com/"><span class="txt">TikTok</span></a>
+    <a class="link" href="#konzerte">
+      <span class="txt">Konzerte</span>
+      <img class="thumb" src="bilder/auto.webp" alt="" width="240" height="240">
+    </a>
+    <a class="link" href="mailto:booking@example.com">
+      <span class="txt">Booking</span>
+      <img class="thumb" src="bilder/dreieck.webp" alt="" width="240" height="240">
+    </a>
+  </nav>
+
+  <footer class="foot">
+    <a href="impressum.html">Impressum</a>
+    <a href="datenschutz.html">Datenschutz</a>
+    <span class="copy">© 2026 otopark</span>
+  </footer>
+</main>
+
+
+<script>
+/* Überschrift auf Seitenbreite skalieren (am Desktop höchstens 42 % der Fensterhöhe) und alle Texte
+   so ausrichten, dass der erste Buchstabe genau am linken Rand beginnt */
+(() => {
+  const name = document.querySelector('.name');
+  const titles = [...document.querySelectorAll('.link .txt')];
+  const cx = document.createElement('canvas').getContext('2d');
+  const lead = (el, ch) => {              // Leerraum vor dem Buchstaben, in em
+    const cs = getComputedStyle(el);
+    cx.font = `${cs.fontWeight} 1000px ${cs.fontFamily}`;
+    return Math.max(0, -cx.measureText(ch).actualBoundingBoxLeft / 1000);
+  };
+  const run = () => {
+    const nl = lead(name, (name.textContent.trim()[0] || 'o'));
+    name.style.marginLeft = '0px';
+    name.style.fontSize = '100px';
+    const r = document.createRange(); r.selectNodeContents(name);
+    const em = r.getBoundingClientRect().width / 100;            // Breite in em
+    const avail = name.clientWidth;
+    if (em > 0) {
+      const size = Math.min(avail / (em - nl) * 0.995, innerHeight * 0.42);
+      name.style.fontSize = size + 'px';
+      name.style.marginLeft = (-nl) + 'em';
+    }
+    titles.forEach(t => {
+      const first = ((t.firstChild && t.firstChild.textContent.trim()[0]) || 'o').toLowerCase();
+      t.style.marginLeft = (-lead(t, first)) + 'em';
+    });
+  };
+  window.refit = run;
+  addEventListener('resize', run);
+  if (document.fonts) document.fonts.ready.then(run);
+  run();
+})();
+
+/* Logo im Stil des DVD-Bildschirmschoners – an jeder Kante bekommen Logo und Links neue, unterschiedliche Farben */
+(() => {
+  'use strict';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const screen = document.querySelector('.screen');
+  const dvd = document.querySelector('.dvd');
+  const root = document.documentElement;
+
+  /* Farben an jeder Kante. Alle sind auf dem Graublau als große Schrift gut lesbar (Kontrast ≥ 3:1). */
+  const COLORS = ['#ffa69c', '#b3c4ff', '#7dffb0', '#ffa8de', '#d2b6ff', '#ffc078', '#7fe3ff', '#ffe066', '#ffffff'];
+  let color = '', linkColor = '';
+  const pick = (...not) => {
+    let c;
+    do { c = COLORS[Math.floor(Math.random() * COLORS.length)]; } while (not.includes(c));
+    return c;
+  };
+  function nextColor() {
+    color = color ? pick(color) : pick('#ffffff');      // Logo: neue Farbe, beim Start nie Weiß
+    linkColor = pick(color, linkColor);                 // Links: neue Farbe, nie gleich dem Logo
+    root.style.setProperty('--c', color);
+    root.style.setProperty('--lc', linkColor);
+  }
+  nextColor();
+
+  let W = 0, H = 0, w = 0, h = 0, x = 0, y = 0, vx = 1, vy = 1, speed = 100;
+  function measure() {
+    W = screen.clientWidth; H = screen.clientHeight;
+    w = dvd.offsetWidth; h = dvd.offsetHeight;
+    speed = Math.max(70, Math.min(140, Math.hypot(W, H) * 0.08));   // Pixel pro Sekunde
+    x = Math.min(Math.max(0, x), Math.max(0, W - w));
+    y = Math.min(Math.max(0, y), Math.max(0, H - h));
+  }
+  function place() {
+    dvd.style.setProperty('--x', x.toFixed(1) + 'px');
+    dvd.style.setProperty('--y', y.toFixed(1) + 'px');
+  }
+
+  measure();
+  if (reduce) {                          // Bewegung reduzieren: Logo steht still am rechten Rand
+    const park = () => { measure(); x = Math.max(0, W - w - 16); y = Math.max(0, (H - h) * 0.62); place(); };
+    park(); addEventListener('resize', park);
+    return;
+  }
+
+  x = Math.random() * Math.max(1, W - w);
+  y = Math.random() * Math.max(1, H - h);
+  vx = Math.random() < .5 ? -1 : 1;
+  vy = Math.random() < .5 ? -1 : 1;
+  place();
+
+  let cornerTimer = 0;
+  function corner() {
+    root.classList.add('corner');
+    clearTimeout(cornerTimer);
+    cornerTimer = setTimeout(() => root.classList.remove('corner'), 900);
+  }
+
+  let last = 0;
+  function frame(t) {
+    const dt = last ? Math.min(0.05, (t - last) / 1000) : 0;
+    last = t;
+    const step = speed * dt * Math.SQRT1_2;           // schräg im 45°-Winkel
+    x += vx * step; y += vy * step;
+    let hitX = false, hitY = false;
+    const maxX = Math.max(0, W - w), maxY = Math.max(0, H - h);
+    if (x <= 0) { x = 0; vx = 1; hitX = true; } else if (x >= maxX) { x = maxX; vx = -1; hitX = true; }
+    if (y <= 0) { y = 0; vy = 1; hitY = true; } else if (y >= maxY) { y = maxY; vy = -1; hitY = true; }
+    if (hitX || hitY) {
+      nextColor();
+      const nearX = x < 3 || x > maxX - 3, nearY = y < 3 || y > maxY - 3;
+      if (nearX && nearY) corner();
+    }
+    place();
+    requestAnimationFrame(frame);
+  }
+  document.addEventListener('visibilitychange', () => { last = 0; });
+  addEventListener('resize', measure);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
