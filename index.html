@@ -53,17 +53,17 @@ body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:#fff
 .links{margin:0 calc(-1 * var(--pad));border-top:var(--rule) solid #fff}
 .link{display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:.2em var(--pad);border-bottom:var(--rule) solid #fff;color:var(--lc);text-decoration:none;
-  font-weight:var(--w);font-size:clamp(36px,10vw,88px);line-height:1.08;letter-spacing:var(--ls);
+  font-weight:var(--w);font-size:clamp(28px,8vw,80px);line-height:1.08;letter-spacing:var(--ls);
   -webkit-tap-highlight-color:transparent}
 
 .link:focus-visible{outline:3px solid #fff;outline-offset:-6px}
 .txt{min-width:0;margin-left:-.05em}   /* gleicht den Leerraum vor dem ersten Buchstaben aus */
 .sub{display:block;margin:.15em 0 .2em;color:#fff;font-size:max(15px,.19em);font-weight:var(--w);letter-spacing:-.02em;line-height:1.2}
 /* kleines Bild rechts neben dem Titel (optional) */
-.thumb{flex:none;display:block;width:1em;height:1em;object-fit:cover}
+.thumb{flex:none;display:block;width:1.8em;height:1.8em;object-fit:cover}
 
-.foot{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:auto;padding-top:calc(var(--vpad) * 2 + 8px);font-size:16px}
-.foot a{color:#fff;text-underline-offset:3px;text-decoration-thickness:1.5px}
+.foot{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:auto;padding-top:calc(var(--vpad) * 2 + 8px);font-size:12px}
+.foot a{color:#fff;text-underline-offset:2px;text-decoration-thickness:1px}
 
 .foot a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .foot .copy{margin-left:auto}
@@ -89,25 +89,23 @@ html.corner .flash{opacity:1}
         <img class="thumb" src="bilder/DATEINAME.jpg" alt="" width="240" height="240">
       Das Bild wird quadratisch zugeschnitten. Ideal: ca. 240 × 240 Pixel, JPG oder WebP, im Ordner bilder/.
       Ohne Bild die Zeile einfach weglassen.
-    - Die drei Bilder in bilder/ sind nur Platzhalter aus dem Logo.
   -->
   <nav class="links" aria-label="Links von otopark">
-    <a class="link" href="https://www.youtube.com/">
-      <span class="txt">Overflow<span class="sub">Die Session auf YouTube ansehen</span></span>
-      <img class="thumb" src="bilder/figur.webp" alt="" width="240" height="240">
+    <a class="link" href="https://open.spotify.com/track/3tSlEqcOaCvUDscZmn88me">
+      <span class="txt">jeanny<span class="sub">listen to jeanny on spotify</span></span>
+      <img class="thumb" src="bilder/jeanny.webp" alt="" width="240" height="240">
     </a>
-    <a class="link" href="https://open.spotify.com/"><span class="txt">Spotify</span></a>
-    <a class="link" href="https://www.instagram.com/"><span class="txt">Instagram</span></a>
-    <a class="link" href="https://www.youtube.com/"><span class="txt">YouTube</span></a>
-    <a class="link" href="https://www.tiktok.com/"><span class="txt">TikTok</span></a>
-    <a class="link" href="#konzerte">
-      <span class="txt">Konzerte</span>
-      <img class="thumb" src="bilder/auto.webp" alt="" width="240" height="240">
+    <a class="link" href="https://open.spotify.com/track/355EsjNYit31ARsVx7t9a2">
+      <span class="txt">sonication<span class="sub">listen to sonication on spotify</span></span>
+      <img class="thumb" src="bilder/sonication.webp" alt="" width="240" height="240">
     </a>
-    <a class="link" href="mailto:booking@example.com">
-      <span class="txt">Booking</span>
-      <img class="thumb" src="bilder/dreieck.webp" alt="" width="240" height="240">
+    <a class="link" href="https://www.youtube.com/watch?v=hRSg6Cju1nY">
+      <span class="txt">overflow @ einmal sessions<span class="sub">watch our performance of overflow on einmal sessions</span></span>
     </a>
+    <a class="link" href="https://open.spotify.com/artist/43H27aw5Zb7nONSRCdYGzO"><span class="txt">spotify</span></a>
+    <a class="link" href="https://music.apple.com/de/artist/otopark/1814825149"><span class="txt">apple music</span></a>
+    <a class="link" href="https://otopark.bandcamp.com/album/sonication"><span class="txt">bandcamp</span></a>
+    <a class="link" href="https://www.instagram.com/otopark__/"><span class="txt">instagram</span></a>
   </nav>
 
   <footer class="foot">
