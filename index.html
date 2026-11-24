@@ -37,12 +37,14 @@ body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(
   font-family:var(--f),ui-monospace,Menlo,monospace;font-weight:var(--w);font-size:18px;line-height:1.35;
   -webkit-font-smoothing:antialiased;text-transform:lowercase}
 
+@property --pop{syntax:'<number>';inherits:false;initial-value:1}
 /* Bildschirmschoner-Ebene: liegt über der Schrift, Klicks gehen durch */
 .screen{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-.dvd{position:absolute;top:0;left:0;width:clamp(220px,46vw,520px);aspect-ratio:900/385;
+.dvd{position:absolute;top:0;left:0;width:calc(clamp(220px,46vw,520px) * var(--s,1));aspect-ratio:900/385;
+  pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;
   background-color:var(--c);
   -webkit-mask:url(logo.webp) center/contain no-repeat;mask:url(logo.webp) center/contain no-repeat;
-  will-change:transform;transform:translate3d(var(--x,0px),var(--y,0px),0)}
+  will-change:transform;transform:translate3d(var(--x,0px),var(--y,0px),0) scale(var(--pop,1))}
 
 .page{position:relative;z-index:1;display:flex;flex-direction:column;min-height:calc(100vh + 5rem);min-height:calc(100svh + 5rem);
   padding:calc(var(--vpad) + env(safe-area-inset-top)) var(--pad) calc(var(--vpad) + env(safe-area-inset-bottom))}
@@ -152,55 +154,101 @@ html.corner .flash{opacity:1}
   run();
 })();
 
-/* Logo im Stil des DVD-Bildschirmschoners – an jeder Kante bekommen Logo und Links neue, unterschiedliche Farben */
+/* Logo im Stil des DVD-Bildschirmschoners.
+   - An jeder Kante bekommt das Logo eine neue Farbe, die Links eine andere.
+   - Klick/Tipp aufs Logo: es teilt sich in zwei kleinere Logos, die auseinanderfliegen. */
 (() => {
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const screen = document.querySelector('.screen');
-  const dvd = document.querySelector('.dvd');
+  const first = document.querySelector('.dvd');
   const root = document.documentElement;
 
   /* Farben an jeder Kante. Alle sind auf dem Graublau als große Schrift gut lesbar (Kontrast ≥ 3:1). */
   const COLORS = ['#ffa69c', '#b3c4ff', '#7dffb0', '#ffa8de', '#d2b6ff', '#ffc078', '#7fe3ff', '#ffe066', '#e0f2f8'];
-  let color = '', linkColor = '';
+  const SHRINK = 0.72;        // jedes neue Logo ist so viel kleiner
+  const MIN_WIDTH = 44;       // kleiner wird nicht geteilt (Pixel)
+  const MAX_LOGOS = 64;
   const pick = (...not) => {
     let c;
     do { c = COLORS[Math.floor(Math.random() * COLORS.length)]; } while (not.includes(c));
     return c;
   };
-  function nextColor() {
-    color = color ? pick(color) : pick('#e0f2f8');      // Logo: neue Farbe, beim Start nie in Titelfarbe
-    linkColor = pick(color, linkColor);                 // Links: neue Farbe, nie gleich dem Logo
-    root.style.setProperty('--c', color);
+  let linkColor = '', lastLink = 0;
+  function recolorLinks(logoColor) {
+    const now = performance.now();
+    if (now - lastLink < 250 && linkColor !== logoColor) return;   // bei vielen Logos nicht zu hektisch
+    lastLink = now;
+    linkColor = pick(logoColor, linkColor);
     root.style.setProperty('--lc', linkColor);
   }
-  nextColor();
 
-  let W = 0, H = 0, w = 0, h = 0, x = 0, y = 0, vx = 1, vy = 1, speed = 100;
+  let W = 0, H = 0, speed = 100;
+  const logos = [];
+  function setColor(L, c) { L.color = c; L.el.style.setProperty('--c', c); }
+  function size(L) { L.w = L.el.offsetWidth; L.h = L.el.offsetHeight; }
+  function place(L) {
+    L.el.style.setProperty('--x', L.x.toFixed(1) + 'px');
+    L.el.style.setProperty('--y', L.y.toFixed(1) + 'px');
+  }
+  function clamp(L) {
+    L.x = Math.min(Math.max(0, L.x), Math.max(0, W - L.w));
+    L.y = Math.min(Math.max(0, L.y), Math.max(0, H - L.h));
+  }
   function measure() {
     W = screen.clientWidth; H = screen.clientHeight;
-    w = dvd.offsetWidth; h = dvd.offsetHeight;
     speed = Math.max(70, Math.min(140, Math.hypot(W, H) * 0.08));   // Pixel pro Sekunde
-    x = Math.min(Math.max(0, x), Math.max(0, W - w));
-    y = Math.min(Math.max(0, y), Math.max(0, H - h));
-  }
-  function place() {
-    dvd.style.setProperty('--x', x.toFixed(1) + 'px');
-    dvd.style.setProperty('--y', y.toFixed(1) + 'px');
+    logos.forEach(L => { size(L); clamp(L); place(L); });
   }
 
+  const start = { el: first, s: 1, x: 0, y: 0, vx: 1, vy: 1, color: '' };
+  logos.push(start);
+  setColor(start, pick('#e0f2f8'));
+  recolorLinks(start.color);
   measure();
+
   if (reduce) {                          // Bewegung reduzieren: Logo steht still am rechten Rand
-    const park = () => { measure(); x = Math.max(0, W - w - 16); y = Math.max(0, (H - h) * 0.62); place(); };
+    first.style.pointerEvents = 'none';
+    const park = () => { measure(); start.x = Math.max(0, W - start.w - 16); start.y = Math.max(0, (H - start.h) * 0.62); place(start); };
     park(); addEventListener('resize', park);
     return;
   }
 
-  x = Math.random() * Math.max(1, W - w);
-  y = Math.random() * Math.max(1, H - h);
-  vx = Math.random() < .5 ? -1 : 1;
-  vy = Math.random() < .5 ? -1 : 1;
-  place();
+  start.x = Math.random() * Math.max(1, W - start.w);
+  start.y = Math.random() * Math.max(1, H - start.h);
+  start.vx = Math.random() < .5 ? -1 : 1;
+  start.vy = Math.random() < .5 ? -1 : 1;
+  place(start);
+
+  function split(L) {
+    const s = L.s * SHRINK;
+    const cx = L.x + L.w / 2, cy = L.y + L.h / 2;
+    if (L.w * SHRINK < MIN_WIDTH || logos.length >= MAX_LOGOS) {   // zu klein: nur kurz aufblitzen
+      setColor(L, pick(L.color)); pop(L.el); return;
+    }
+    L.s = s; L.el.style.setProperty('--s', s); size(L);
+    const el = L.el.cloneNode(false);
+    screen.appendChild(el);
+    L.vx = Math.random() < .5 ? -1 : 1;                 // zufällige Schräge für das alte Logo …
+    L.vy = Math.random() < .5 ? -1 : 1;
+    const twin = { el, s, x: 0, y: 0, vx: -L.vx, vy: -L.vy, color: '' };   // … das neue fliegt genau entgegengesetzt
+    el.style.setProperty('--s', s);
+    logos.push(twin); size(twin);
+    L.x = cx - L.w / 2; L.y = cy - L.h / 2;
+    twin.x = L.x; twin.y = L.y;
+    setColor(twin, pick(L.color));
+    clamp(L); clamp(twin); place(L); place(twin);
+    pop(L.el); pop(el);
+    el.addEventListener('pointerdown', onTap);
+  }
+  function pop(el) {
+    el.animate([{ '--pop': 1.25 }, { '--pop': 1 }], { duration: 260, easing: 'cubic-bezier(.2,.9,.3,1.4)' });
+  }
+  function onTap(e) {
+    const L = logos.find(l => l.el === e.currentTarget);
+    if (L) { e.preventDefault(); split(L); }
+  }
+  first.addEventListener('pointerdown', onTap);
 
   let cornerTimer = 0;
   function corner() {
@@ -213,18 +261,21 @@ html.corner .flash{opacity:1}
   function frame(t) {
     const dt = last ? Math.min(0.05, (t - last) / 1000) : 0;
     last = t;
-    const step = speed * dt * Math.SQRT1_2;           // schräg im 45°-Winkel
-    x += vx * step; y += vy * step;
-    let hitX = false, hitY = false;
-    const maxX = Math.max(0, W - w), maxY = Math.max(0, H - h);
-    if (x <= 0) { x = 0; vx = 1; hitX = true; } else if (x >= maxX) { x = maxX; vx = -1; hitX = true; }
-    if (y <= 0) { y = 0; vy = 1; hitY = true; } else if (y >= maxY) { y = maxY; vy = -1; hitY = true; }
-    if (hitX || hitY) {
-      nextColor();
-      const nearX = x < 3 || x > maxX - 3, nearY = y < 3 || y > maxY - 3;
-      if (nearX && nearY) corner();
+    for (const L of logos) {
+      const step = speed * dt * Math.SQRT1_2 * (0.85 + 0.15 / L.s) ;   // kleine Logos etwas schneller
+      L.x += L.vx * step; L.y += L.vy * step;
+      let hitX = false, hitY = false;
+      const maxX = Math.max(0, W - L.w), maxY = Math.max(0, H - L.h);
+      if (L.x <= 0) { L.x = 0; L.vx = 1; hitX = true; } else if (L.x >= maxX) { L.x = maxX; L.vx = -1; hitX = true; }
+      if (L.y <= 0) { L.y = 0; L.vy = 1; hitY = true; } else if (L.y >= maxY) { L.y = maxY; L.vy = -1; hitY = true; }
+      if (hitX || hitY) {
+        setColor(L, pick(L.color));
+        recolorLinks(L.color);
+        const nearX = L.x < 3 || L.x > maxX - 3, nearY = L.y < 3 || L.y > maxY - 3;
+        if (nearX && nearY) corner();
+      }
+      place(L);
     }
-    place();
     requestAnimationFrame(frame);
   }
   document.addEventListener('visibilitychange', () => { last = 0; });
