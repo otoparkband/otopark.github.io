@@ -71,7 +71,7 @@ body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(
 .foot a:focus-visible{outline:3px solid var(--title);outline-offset:3px}
 .foot .copy{margin-left:auto}
 
-/* Kurzer Gag, wenn das Logo genau eine Ecke trifft */
+/* Invertierte Farben, wenn ein Logo eine Ecke trifft */
 .flash{position:fixed;inset:0;z-index:5;pointer-events:none;background:#fff;mix-blend-mode:difference;opacity:0}
 html.corner .flash{opacity:1}
 
@@ -139,7 +139,7 @@ html.corner .flash{opacity:1}
     const em = r.getBoundingClientRect().width / 100;            // Breite in em
     const avail = name.clientWidth;
     if (em > 0) {
-      const size = Math.min(avail / (em - nl) * 0.995, innerHeight * 0.42);
+      const size = Math.min(avail / (em - nl) * 0.9, innerHeight * 0.38);   // 90 % der Breite, links ausgerichtet
       name.style.fontSize = size + 'px';
       name.style.marginLeft = (-nl) + 'em';
     }
@@ -250,11 +250,19 @@ html.corner .flash{opacity:1}
   }
   first.addEventListener('pointerdown', onTap);
 
-  let cornerTimer = 0;
-  function corner() {
-    root.classList.add('corner');
-    clearTimeout(cornerTimer);
-    cornerTimer = setTimeout(() => root.classList.remove('corner'), 900);
+  /* Trifft ein Logo (fast) genau eine Ecke, werden alle Farben invertiert –
+     bis zur nächsten Kantenberührung, mindestens aber 5 Sekunden */
+  const CORNER_TOLERANCE = 30, INVERT_MIN_MS = 5000;   // Toleranz in Pixeln, Mindestdauer in ms
+  let invertedAt = 0, undoTimer = 0;
+  function edgeHit(isCorner) {
+    if (isCorner) {
+      clearTimeout(undoTimer); undoTimer = 0;
+      invertedAt = performance.now();
+      root.classList.add('corner');
+    } else if (root.classList.contains('corner') && !undoTimer) {
+      const wait = INVERT_MIN_MS - (performance.now() - invertedAt);
+      undoTimer = setTimeout(() => { root.classList.remove('corner'); undoTimer = 0; }, Math.max(0, wait));
+    }
   }
 
   let last = 0;
@@ -271,8 +279,9 @@ html.corner .flash{opacity:1}
       if (hitX || hitY) {
         setColor(L, pick(L.color));
         recolorLinks(L.color);
-        const nearX = L.x < 3 || L.x > maxX - 3, nearY = L.y < 3 || L.y > maxY - 3;
-        if (nearX && nearY) corner();
+        const nearX = L.x < CORNER_TOLERANCE || L.x > maxX - CORNER_TOLERANCE;
+        const nearY = L.y < CORNER_TOLERANCE || L.y > maxY - CORNER_TOLERANCE;
+        edgeHit(nearX && nearY);
       }
       place(L);
     }
