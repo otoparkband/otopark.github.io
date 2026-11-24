@@ -112,8 +112,6 @@ html.corner .flash{opacity:1}
   </nav>
 
   <footer class="foot">
-    <a href="impressum.html">Impressum</a>
-    <a href="datenschutz.html">Datenschutz</a>
     <span class="copy">© 2026 otopark</span>
   </footer>
 </main>
@@ -141,7 +139,7 @@ html.corner .flash{opacity:1}
     if (em > 0) {
       const size = Math.min(avail / (em - nl) * 0.9, innerHeight * 0.38);   // 90 % der Breite, links ausgerichtet
       name.style.fontSize = size + 'px';
-      name.style.marginLeft = (-nl) + 'em';
+      name.style.marginLeft = `calc(${-nl}em - var(--pad) + 1px)`;   // erster Buchstabe 1 px vom Bildschirmrand
     }
     titles.forEach(t => {
       const first = ((t.firstChild && t.firstChild.textContent.trim()[0]) || 'o').toLowerCase();
